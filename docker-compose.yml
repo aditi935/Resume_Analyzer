@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  ats-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ats-resume-analyzer:latest
+    container_name: ats-resume-analyzer
+    restart: unless-stopped
+
+    # ── Environment ───────────────────────────────────────────────────────────
+    env_file:
+      - .env
+
+    # ── Port mapping (host:container) ─────────────────────────────────────────
+    ports:
+      - "8501:8501"
+
+    # ── Volumes (optional: persist uploaded files) ────────────────────────────
+    volumes:
+      - ./uploads:/app/uploads
+
+    # ── Health check ──────────────────────────────────────────────────────────
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
